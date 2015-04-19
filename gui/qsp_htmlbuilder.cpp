@@ -33,6 +33,10 @@ QString QSP_HTMLBuilder::getHTML() {
   updateMessage();
   updateObjects();
   updateActions();
+  if(messageTexts.isEmpty())
+    thereIsAMessage = false;
+  else
+    thereIsAMessage = true;
   return QLatin1String("<head><script type='text/javascript'>") % scripts %
          QLatin1String("</script>") % stylesheet % QLatin1String("<style>") %
          baseStyle % QLatin1String("</style></head>") %

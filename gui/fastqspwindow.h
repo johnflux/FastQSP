@@ -34,6 +34,7 @@
 #include <Phonon/AudioOutput>
 #else
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
 #endif
 
 class FastQSPWindow : public QMainWindow {
@@ -70,6 +71,8 @@ private slots:
   void linkClicked(const QUrl &url);
   void toggleFullscreen();
   void toggleUpdate();
+  void replayVideo(qint64 pos);
+
 
 private:
   QMenu *gameMenu;
@@ -77,12 +80,15 @@ private:
   QGraphicsWebView *webView;
   QGraphicsView *graphicsView;
   QGraphicsScene *scene;
+  QMediaPlayer *videoPlayer ;
+  QGraphicsVideoItem *videoItem;
   QString gameDirectory;
   uint gameWidth;
   uint gameHeight;
   qreal aspectRatio;
   qreal scaleFactor;
   bool gameIsOpen;
+  void maybePlayVideo(QString html);
 #if QT_VERSION < 0x050000
   Phonon::MediaObject *media;
   Phonon::AudioOutput *audioOutput;

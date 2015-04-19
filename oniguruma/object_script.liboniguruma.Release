@@ -1,0 +1,19 @@
+CREATE ../build/release/bin/liboniguruma.a
+ADDMOD ../build/release/obj/oniguruma/regcomp.o
+ADDMOD ../build/release/obj/oniguruma/regenc.o
+ADDMOD ../build/release/obj/oniguruma/regerror.o
+ADDMOD ../build/release/obj/oniguruma/regexec.o
+ADDMOD ../build/release/obj/oniguruma/regparse.o
+ADDMOD ../build/release/obj/oniguruma/regsyntax.o
+ADDMOD ../build/release/obj/oniguruma/regtrav.o
+ADDMOD ../build/release/obj/oniguruma/regversion.o
+ADDMOD ../build/release/obj/oniguruma/st.o
+ADDMOD ../build/release/obj/oniguruma/ascii.o
+ADDMOD ../build/release/obj/oniguruma/cp1251.o
+ADDMOD ../build/release/obj/oniguruma/koi8_r.o
+ADDMOD ../build/release/obj/oniguruma/unicode.o
+ADDMOD ../build/release/obj/oniguruma/utf16_be.o
+ADDMOD ../build/release/obj/oniguruma/utf16_le.o
+ADDMOD ../build/release/obj/oniguruma/utf32_be.o
+ADDMOD ../build/release/obj/oniguruma/utf32_le.o
+SAVE

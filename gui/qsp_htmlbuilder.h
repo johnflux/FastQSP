@@ -9,6 +9,7 @@
 #include <QQueue>
 #include <QRegExp>
 #include <QDebug>
+#include <QGraphicsVideoItem>
 
 class QSP_HTMLBuilder {
 public:
@@ -25,6 +26,7 @@ public:
   void showMessage(const QString text);
   void hideMessage();
   void clear();
+  bool thereIsAMessage = false;
 
 private:
   QString directory;

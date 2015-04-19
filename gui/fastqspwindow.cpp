@@ -38,6 +38,17 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   webView->settings()->setAttribute(QWebSettings::AutoLoadImages, true);
   webView->setAutoFillBackground(false);
 
+  videoPlayer = new QMediaPlayer();
+  videoItem = new QGraphicsVideoItem();
+  videoItem->setSize(QSize(gameWidth + 4, gameHeight + 4));
+  videoItem->setAspectRatioMode(Qt::KeepAspectRatioByExpanding);
+  videoPlayer->setVideoOutput(videoItem);
+  videoPlayer->setMuted(true);
+  videoPlayer->setNotifyInterval(500);
+  scene->addItem(videoItem);
+  videoItem->hide();
+  connect(videoPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(replayVideo(qint64)));
+
   // Filter context menu event
   graphicsView->viewport()->installEventFilter(this);
 
@@ -267,7 +278,7 @@ void FastQSPWindow::playAudio(QString filename, int vol) {
   if (QFile(filename).exists() &&
       player->state() != QMediaPlayer::PlayingState) {
     qDebug() << "playing:" << QFileInfo(filename).filePath() << vol;
-    player->setMedia(QUrl::fromLocalFile(QFileInfo(filename).filePath()));
+    player->setMedia(QUrl::fromLocalFile(QFileInfo(filename).absoluteFilePath()));
     player->setVolume(vol);
     player->play();
   }
@@ -343,9 +354,77 @@ void FastQSPWindow::openFile(const QString &filename) {
 void FastQSPWindow::refreshView() { qDebug() << "refreshView()"; }
 
 void FastQSPWindow::loadPage() {
-  webView->setHtml(builder.getHTML(), QUrl("http://qspgame.local"));
+  QString html = builder.getHTML();
+  if(builder.thereIsAMessage == false)
+  {
+    maybePlayVideo(html);
+  }
+  webView->setHtml(html, QUrl("http://qspgame.local"));
   if (autosaveAction->isChecked())
     autosave();
+}
+
+// Ugly way of looping a video, but using a playlist
+// is not gapless. videPlayer->setNotifyInterval, could be
+// tweaked, if impressision is a problem.
+void FastQSPWindow::replayVideo(qint64 pos)
+{
+  if(videoPlayer->duration() > 0)
+  {
+    if(videoPlayer->position() > videoPlayer->duration() - 600)
+    {
+      videoPlayer->setPosition(0);
+    }
+  }
+}
+
+void FastQSPWindow::maybePlayVideo(QString html)
+{
+  QRegExp imgTagRegex("\\<img[^\\>]*src\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>", Qt::CaseInsensitive);
+  imgTagRegex.setMinimal(true);
+  QStringList urlmatches;
+  QStringList imgmatches;
+  int offset = 0;
+  while( (offset = imgTagRegex.indexIn(html, offset)) != -1){
+    offset += imgTagRegex.matchedLength();
+    imgmatches.append(imgTagRegex.cap(0)); // Should hold complete img tag
+    urlmatches.append(imgTagRegex.cap(1)); // Should hold only src property
+  }
+  bool found_image_to_overlap = false;
+  foreach(QString img_src, urlmatches)
+  {
+    img_src = img_src.replace('\\', '/');
+
+    if(img_src.contains("pic/girls/scene") ||
+       img_src.contains("pic/girls/sex") ||
+       img_src.contains("pic/girls/torture"))
+      {
+        found_image_to_overlap = true;
+        if(videoPlayer->state() != QMediaPlayer::PlayingState)
+        {
+          QFileInfo current_image(img_src);
+          QStringList extensions;
+          extensions << ".mp4" << ".mkv" << ".wmv" << ".avi" << ".webm" << ".flv";
+          QFileInfo video_file;
+          foreach (QString ext, extensions)
+          {
+            video_file.setFile(gameDirectory + current_image.path().replace("content/pic","content/video") + "/" + current_image.baseName() + ext);
+            if(video_file.exists())
+            {
+              videoItem->show();
+              videoPlayer->setMedia(QUrl::fromLocalFile(video_file.absoluteFilePath()));
+              videoPlayer->play();
+              break;
+            }
+          }
+        }
+      }
+  }
+  if(found_image_to_overlap == false)
+  {
+    videoPlayer->stop();
+    videoItem->hide();
+  }
 }
 
 void FastQSPWindow::autosave() {

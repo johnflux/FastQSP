@@ -1,9 +1,9 @@
 QT += core gui webkit webkitwidgets network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += multimedia
+greaterThan(QT_MAJOR_VERSION, 4): QT += multimedia multimediawidgets
 else: QT += phonon
 
-QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
+#QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
 CONFIG += c++11
 
 TARGET = FastQSP
