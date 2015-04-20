@@ -50,8 +50,16 @@ void QSPCallback::playFile(const QSP_CHAR *file, int volume) {
 }
 
 void QSPCallback::closeFile(const QSP_CHAR *file) {
-  qspWin->stopAudio();
-  qDebug() << "closeFile(), file: " << QString::fromWCharArray(file);
+  if(file == NULL)
+  {
+    qspWin->stopAudio(NULL);
+    qDebug() << "closeFile(), all files.";
+  }
+  else
+  {
+    qspWin->stopAudio(QString::fromWCharArray(file));
+    qDebug() << "closeFile(), file: " << QString::fromWCharArray(file);
+  }
 }
 
 void QSPCallback::showImage(const QSP_CHAR *file) {

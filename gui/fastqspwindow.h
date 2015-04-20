@@ -35,6 +35,7 @@
 #else
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include <QMap>
 #endif
 
 class FastQSPWindow : public QMainWindow {
@@ -44,7 +45,7 @@ public:
   ~FastQSPWindow();
   void openFile(const QString &filename);
   void playAudio(QString filename, int vol);
-  void stopAudio();
+  void stopAudio(QString filename);
   void refreshView();
   int getTimeFromStart();
   QSP_HTMLBuilder builder;
@@ -73,7 +74,6 @@ private slots:
   void toggleUpdate();
   void replayVideo(qint64 pos);
 
-
 private:
   QMenu *gameMenu;
   QAction *autosaveAction;
@@ -94,6 +94,7 @@ private:
   Phonon::AudioOutput *audioOutput;
 #else
   QMediaPlayer *player;
+  QMap<QString, QMediaPlayer*> audio;
 #endif
   QTime timer;
   QDir saveDir;

@@ -275,21 +275,34 @@ void FastQSPWindow::playAudio(QString filename, int vol) {
     media->play();
   }
 #else
-  if (QFile(filename).exists() &&
-      player->state() != QMediaPlayer::PlayingState) {
-    qDebug() << "playing:" << QFileInfo(filename).filePath() << vol;
-    player->setMedia(QUrl::fromLocalFile(QFileInfo(filename).absoluteFilePath()));
-    player->setVolume(vol);
-    player->play();
+  if (QFile(filename).exists())
+  {
+    if(audio[filename] == NULL || audio[filename]->state() != QMediaPlayer::PlayingState)
+    {
+       if (audio[filename] == NULL)
+         audio[filename] = new QMediaPlayer();
+       audio[filename]->setMedia(QUrl::fromLocalFile(QFileInfo(filename).absoluteFilePath()));
+       audio[filename]->setVolume(vol);
+       audio[filename]->play();
+    }
   }
 #endif
 }
 
-void FastQSPWindow::stopAudio() {
+void FastQSPWindow::stopAudio(QString filename) {
 #if QT_VERSION < 0x050000
   media->stop();
 #else
-  player->stop();
+  if(filename == NULL)
+  {
+    for(QMediaPlayer *x : audio)
+        x->stop();
+    return;
+  }
+  if(audio[filename] != NULL)
+  {
+    audio[filename]->stop();
+  }
 #endif
 }
 
