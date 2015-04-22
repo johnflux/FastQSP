@@ -879,6 +879,7 @@ QSPVariant qspExprValue(QSP_CHAR *expr) {
   if(*no_space_expr == QSP_FILE_EXISTS)
   {
       QString path = QString::fromWCharArray(expr).split('%')[1].simplified();
+      path = path.replace('\\', '/');
       QFile file(*qspGameDirectory + path);
       QSPVariant res;
       res.IsStr = 0;
