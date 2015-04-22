@@ -27,6 +27,9 @@
 #include "text.h"
 #include "time.h"
 #include "variables.h"
+#include <QString>
+#include <QDebug>
+#include <QFile>
 
 QSPMathOperation qspOps[qspOpLast_Operation];
 QSPMathOpName qspOpsNames[QSP_OPSLEVELS][QSP_MAXOPSNAMES];
@@ -872,6 +875,20 @@ static int qspCompileExpression(QSP_CHAR *s, QSPVariant *compValues,
 }
 
 QSPVariant qspExprValue(QSP_CHAR *expr) {
+  QSP_CHAR *no_space_expr = qspSkipSpaces(expr);
+  if(*no_space_expr == QSP_FILE_EXISTS)
+  {
+      QString path = QString::fromWCharArray(expr).split('%')[1].simplified();
+      QFile file(*qspGameDirectory + path);
+      QSPVariant res;
+      res.IsStr = 0;
+      if(file.exists())
+          QSP_NUM(res) = 1;
+      else
+          QSP_NUM(res) = 0;
+
+      return res;
+  }
   QSPVariant compValues[QSP_MAXITEMS];
   int compOpCodes[QSP_MAXITEMS], compArgsCounts[QSP_MAXITEMS], itemsCount;
   if (!(itemsCount = qspCompileExpression(expr, compValues, compOpCodes,

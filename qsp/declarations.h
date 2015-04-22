@@ -122,5 +122,6 @@ static int qspEndiannessTestValue = 1;
 #define QSP_DIV QSP_FMT("/")
 #define QSP_MUL QSP_FMT("*")
 #define QSP_DELIMS QSP_FMT(" \t&'\"()[]=!<>+-/*:,{}")
+#define QSP_FILE_EXISTS QSP_FMT('%')
 
 #endif

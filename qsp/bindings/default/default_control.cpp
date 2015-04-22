@@ -329,7 +329,8 @@ const QSP_CHAR *QSPGetErrorDesc(int errorNum) {
 /* Управление игрой */
 
 /* Загрузка новой игры из файла */
-QSP_BOOL QSPLoadGameWorld(const QSP_CHAR *fileName) {
+QSP_BOOL QSPLoadGameWorld(const QSP_CHAR *fileName, QString *gameDirectory) {
+  qspGameDirectory = gameDirectory;
   if (qspIsExitOnError && qspErrorNum)
     return QSP_FALSE;
   qspResetError();
