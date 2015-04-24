@@ -12,7 +12,7 @@ namespace QSPCallback {
 void QSPCallback();
 void debug(const QSP_CHAR *str);
 QSP_BOOL isPlayingFile(const QSP_CHAR *file);
-void playFile(const QSP_CHAR *file, int volume);
+void playFile(const QSP_CHAR *file, int volume, const QSP_CHAR *flags);
 void closeFile(const QSP_CHAR *file);
 void showImage(const QSP_CHAR *file);
 void showWindow(int type, QSP_BOOL isShow);

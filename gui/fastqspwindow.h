@@ -36,6 +36,7 @@
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
 #include <QMap>
+#include "audiostream.h"
 #endif
 
 class FastQSPWindow : public QMainWindow {
@@ -44,7 +45,7 @@ public:
   explicit FastQSPWindow(QWidget *parent = 0);
   ~FastQSPWindow();
   void openFile(const QString &filename);
-  void playAudio(QString filename, int vol);
+  void playAudio(QString filename, int vol, QString flags);
   void stopAudio(QString filename);
   void refreshView();
   int getTimeFromStart();
@@ -94,7 +95,7 @@ private:
   Phonon::AudioOutput *audioOutput;
 #else
   QMediaPlayer *player;
-  QMap<QString, QMediaPlayer*> audio;
+  QMap<QString, AudioStream*> audio;
 #endif
   QTime timer;
   QDir saveDir;

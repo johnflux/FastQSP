@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     qsp_callback.cpp \
     fastqspwindow.cpp \
     qsp_htmlbuilder.cpp \
-    local_requsts_proxy.cpp
+    local_requsts_proxy.cpp \
+    audiostream.cpp
 
 HEADERS  += \
     qsp.h \
@@ -27,7 +28,8 @@ HEADERS  += \
     qsp_callback.h \
     fastqspwindow.h \
     qsp_htmlbuilder.h \
-    local_requsts_proxy.h
+    local_requsts_proxy.h \
+    audiostream.h
 
 CONFIG(release, debug|release) {
     BUILDDIR = ../build/release

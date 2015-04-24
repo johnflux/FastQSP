@@ -237,6 +237,7 @@ void qspOpenQuestFromData(char *data, int dataSize, QSP_CHAR *fileName,
   }
   if (!isAddLocs)
     crc = qspCRC(data, dataSize);
+
   count = qspSplitGameStr(data, isUCS2 = !data[1], QSP_STRSDELIM, &strs);
   if (!qspCheckQuest(strs, count, isUCS2)) {
     qspSetError(QSP_ERR_CANTLOADFILE);

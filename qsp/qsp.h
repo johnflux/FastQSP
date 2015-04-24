@@ -63,7 +63,7 @@ enum { QSP_WIN_ACTS, QSP_WIN_OBJS, QSP_WIN_VARS, QSP_WIN_INPUT };
 enum {
   QSP_CALL_DEBUG,           /* void func(const QSP_CHAR *str) */
   QSP_CALL_ISPLAYINGFILE,   /* QSP_BOOL func(const QSP_CHAR *file) */
-  QSP_CALL_PLAYFILE,        /* void func(const QSP_CHAR *file, int volume) */
+  QSP_CALL_PLAYFILE,        /* void func(const QSP_CHAR *file, int volume, const QSP_CHAR *flags) */
   QSP_CALL_CLOSEFILE,       /* void func(const QSP_CHAR *file) */
   QSP_CALL_SHOWIMAGE,       /* void func(const QSP_CHAR *file) */
   QSP_CALL_SHOWWINDOW,      /* void func(int type, QSP_BOOL isShow) */

@@ -264,7 +264,7 @@ void FastQSPWindow::linkClicked(const QUrl &url) {
   loadPage();
 }
 
-void FastQSPWindow::playAudio(QString filename, int vol) {
+void FastQSPWindow::playAudio(QString filename, int vol, QString flags) {
   filename = filename.replace('\\', '/');
 #if QT_VERSION < 0x050000
   if (QFile(filename).exists() && media->state() != Phonon::PlayingState) {
@@ -280,7 +280,8 @@ void FastQSPWindow::playAudio(QString filename, int vol) {
     if(audio[filename] == NULL || audio[filename]->state() != QMediaPlayer::PlayingState)
     {
        if (audio[filename] == NULL)
-         audio[filename] = new QMediaPlayer();
+         audio[filename] = new AudioStream(&audio);
+       audio[filename]->updateFlags(flags);
        audio[filename]->setMedia(QUrl::fromLocalFile(QFileInfo(filename).absoluteFilePath()));
        audio[filename]->setVolume(vol);
        audio[filename]->play();
@@ -295,8 +296,10 @@ void FastQSPWindow::stopAudio(QString filename) {
 #else
   if(filename == NULL)
   {
-    for(QMediaPlayer *x : audio)
-        x->stop();
+    for(AudioStream *x : audio)
+    {
+      x->stop();
+    }
     return;
   }
   if(audio[filename] != NULL)

@@ -164,12 +164,12 @@ void qspCallShowWindow(int type, QSP_BOOL isShow) {
   }
 }
 
-void qspCallPlayFile(QSP_CHAR *file, int volume) {
+void qspCallPlayFile(QSP_CHAR *file, int volume, const QSP_CHAR *flags) {
   /* Здесь начинаем воспроизведение файла с заданной громкостью */
   QSPCallState state;
   if (qspCallBacks[QSP_CALL_PLAYFILE]) {
     qspSaveCallState(&state, QSP_TRUE, QSP_FALSE);
-    qspCallBacks[QSP_CALL_PLAYFILE](file, volume);
+    qspCallBacks[QSP_CALL_PLAYFILE](file, volume, flags);
     qspRestoreCallState(&state);
   }
 }

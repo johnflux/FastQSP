@@ -19,11 +19,12 @@
 #include "callbacks.h"
 #include "game.h"
 #include "text.h"
+#include <QDebug>
 
 QSP_CHAR *qspPLFiles[QSP_MAXPLFILES];
 int qspPLFilesCount = 0;
 
-static void qspPlayFile(QSP_CHAR *, int, QSP_BOOL);
+static void qspPlayFile(QSP_CHAR *, int, QSP_BOOL, const QSP_CHAR *flags);
 static int qspSearchPlayList(QSP_CHAR *);
 
 void qspClearPlayList(QSP_BOOL isFirst) {
@@ -35,7 +36,7 @@ void qspClearPlayList(QSP_BOOL isFirst) {
   qspPLFilesCount = 0;
 }
 
-static void qspPlayFile(QSP_CHAR *s, int volume, QSP_BOOL isAddToPlayList) {
+static void qspPlayFile(QSP_CHAR *s, int volume, QSP_BOOL isAddToPlayList, const QSP_CHAR *flags) {
   int len;
   QSP_CHAR buf[4], *file;
   if (!qspIsAnyString(s))
@@ -45,7 +46,7 @@ static void qspPlayFile(QSP_CHAR *s, int volume, QSP_BOOL isAddToPlayList) {
   else if (volume > 100)
     volume = 100;
   file = qspGetAbsFromRelPath(s);
-  qspCallPlayFile(file, volume);
+  qspCallPlayFile(file, volume, flags);
   free(file);
   if (isAddToPlayList) {
     if (qspPLFilesCount == QSP_MAXPLFILES) {
@@ -98,10 +99,10 @@ void qspPlayPLFiles() {
     pos = qspStrChar(qspPLFiles[i], QSP_PLVOLUMEDELIM[0]);
     if (pos) {
       *pos = 0;
-      qspPlayFile(qspPLFiles[i], qspStrToNum(pos + 1, nullptr), QSP_FALSE);
+      qspPlayFile(qspPLFiles[i], qspStrToNum(pos + 1, nullptr), QSP_FALSE, L"");
       *pos = QSP_PLVOLUMEDELIM[0];
     } else
-      qspPlayFile(qspPLFiles[i], 100, QSP_FALSE);
+      qspPlayFile(qspPLFiles[i], 100, QSP_FALSE, L"");
   }
 }
 
@@ -134,7 +135,8 @@ void qspRefreshPlayList() {
 QSP_BOOL qspStatementPlayFile(QSPVariant *args, int count, QSP_CHAR **jumpTo,
                               int extArg) {
   int volume = (count == 2 ? QSP_NUM(args[1]) : 100);
-  qspPlayFile(QSP_STR(args[0]), volume, QSP_TRUE);
+  const QSP_CHAR *flags = (count == 3 ? QSP_STR(args[2]) : L"");
+  qspPlayFile(QSP_STR(args[0]), volume, QSP_TRUE, flags);
   return QSP_FALSE;
 }
 

@@ -53,7 +53,7 @@ void qspCallShowMessage(QSP_CHAR *);
 int qspCallShowMenu();
 void qspCallShowPicture(QSP_CHAR *);
 void qspCallShowWindow(int, QSP_BOOL);
-void qspCallPlayFile(QSP_CHAR *, int);
+void qspCallPlayFile(QSP_CHAR *, int, const QSP_CHAR *flags);
 QSP_BOOL qspCallIsPlayingFile(QSP_CHAR *);
 void qspCallSleep(int);
 int qspCallGetMSCount();

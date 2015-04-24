@@ -42,8 +42,8 @@ QSP_BOOL QSPCallback::isPlayingFile(const QSP_CHAR *file) {
   return true;
 }
 
-void QSPCallback::playFile(const QSP_CHAR *file, int volume) {
-  qspWin->playAudio(QString::fromWCharArray(file), volume);
+void QSPCallback::playFile(const QSP_CHAR *file, int volume, const QSP_CHAR *flags) {
+  qspWin->playAudio(QString::fromWCharArray(file), volume, QString::fromWCharArray(flags));
   qDebug() << "playFile()"
            << ", file: " << QString::fromWCharArray(file)
            << ", volume: " << volume;

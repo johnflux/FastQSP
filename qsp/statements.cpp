@@ -178,7 +178,7 @@ void qspInitStats() {
   qspAddStatement(qspStatMsg, 0, qspStatementMsg, 1, 1, 1);
   qspAddStatement(qspStatOpenGame, 0, qspStatementOpenGame, 0, 1, 1);
   qspAddStatement(qspStatOpenQst, 0, qspStatementOpenQst, 1, 1, 1);
-  qspAddStatement(qspStatPlay, 0, qspStatementPlayFile, 1, 2, 1, 2);
+  qspAddStatement(qspStatPlay, 0, qspStatementPlayFile, 1, 3, 1, 2, 1);
   qspAddStatement(qspStatRefInt, 0, qspStatementRefInt, 0, 0);
   qspAddStatement(qspStatSaveGame, 0, qspStatementSaveGame, 0, 1, 1);
   qspAddStatement(qspStatSetTimer, 0, qspStatementSetTimer, 1, 1, 2);
