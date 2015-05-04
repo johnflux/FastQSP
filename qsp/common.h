@@ -37,6 +37,7 @@ extern QSP_BOOL qspIsVarsDescChanged;
 extern QSP_BOOL qspCurIsShowVars;
 extern QSP_BOOL qspCurIsShowInput;
 extern QString *qspGameDirectory;
+extern bool qspIgnoreCRC;
 
 /* External functions */
 void qspPrepareExecution();

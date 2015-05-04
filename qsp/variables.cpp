@@ -22,6 +22,7 @@
 #include "mathops.h"
 #include "regexp.h"
 #include "text.h"
+#include <QDebug>
 
 QSPVar qspVars[QSP_VARSCOUNT];
 QSPVarsGroup *qspSavedVarsGroups = nullptr;
@@ -678,6 +679,7 @@ void qspMoveVar(QSPVar *dest, QSPVar *src) {
 }
 
 static void qspSetVarValue(QSP_CHAR *name, QSPVariant *v, QSP_CHAR op) {
+//  qDebug() << "VAR: " << QString::fromWCharArray(name);
   QSPVariant v2;
   QSP_BOOL isSingleValue, notFirstValue = QSP_FALSE;
   QSP_CHAR *newValPos, *newCommaPos, *valPos, *commaPos = name;

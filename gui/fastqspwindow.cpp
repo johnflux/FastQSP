@@ -2,11 +2,14 @@
 #include "qsp_default.h"
 #include "fastqspwindow.h"
 #include <QIcon>
+#include <QSettings>
 
 FastQSPWindow::FastQSPWindow(QWidget *parent)
     : QMainWindow(parent), gameWidth(800), gameHeight(600),
       aspectRatio(qreal(gameWidth) / qreal(gameHeight)), scaleFactor(1),
-      gameIsOpen(false), netManager() {
+      gameIsOpen(false), netManager(),
+      settings (QSettings::IniFormat, QSettings::UserScope, "FastQSP", "config")
+{
 // Init audio
 #if QT_VERSION < 0x050000
   media = new Phonon::MediaObject(this);
@@ -78,6 +81,12 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   gameMenu->addAction("Restart\tCtrl+R", this, SLOT(restartGame()));
   QShortcut *restart = new QShortcut(QKeySequence("Ctrl+R"), this);
   connect(restart, SIGNAL(activated()), SLOT(restartGame()));
+
+  ignoreCRCAction = new QAction("Ignore version check when loading", this);
+  ignoreCRCAction->setCheckable(true);
+  ignoreCRCAction->setChecked(settings.value("ignoreCRC", false).toBool());
+  connect(ignoreCRCAction, SIGNAL(toggled(bool)), this, SLOT(saveIgnoreCRCState()));
+  gameMenu->addAction(ignoreCRCAction);
 
   // TODO: slows the game, move saving to diffrent thread
   autosaveAction = new QAction("Autosave", this);
@@ -203,7 +212,7 @@ void FastQSPWindow::loadGame(const QString &filename) {
   qDebug() << "Loading game from" << filename;
   builder.clear();
   if (!filename.isEmpty() &&
-      QSPOpenSavedGame(filename.toStdWString().c_str(), true)) {
+      QSPOpenSavedGame(filename.toStdWString().c_str(), true, ignoreCRCAction->isChecked())) {
     loadPage();
   }
 }
@@ -286,6 +295,14 @@ void FastQSPWindow::playAudio(QString filename, int vol, QString flags) {
        audio[filename]->setVolume(vol);
        audio[filename]->play();
     }
+    else // Update volume and flags when playing (does nothing, if there are no change)
+    {
+      if(vol != audio[filename]->volume())
+        audio[filename]->setVolume(30);
+
+      audio[filename]->updateFlags(flags);
+    }
+
   }
 #endif
 }
@@ -441,6 +458,11 @@ void FastQSPWindow::maybePlayVideo(QString html)
     videoPlayer->stop();
     videoItem->hide();
   }
+}
+
+void FastQSPWindow::saveIgnoreCRCState()
+{
+  settings.setValue("ignoreCRC", ignoreCRCAction->isChecked());
 }
 
 void FastQSPWindow::autosave() {

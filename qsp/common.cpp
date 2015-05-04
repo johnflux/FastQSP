@@ -40,6 +40,7 @@ QSP_BOOL qspIsVarsDescChanged = QSP_FALSE;
 QSP_BOOL qspCurIsShowVars = QSP_TRUE;
 QSP_BOOL qspCurIsShowInput = QSP_TRUE;
 QString *qspGameDirectory;
+bool qspIgnoreCRC = false;
 
 static unsigned int qspURand();
 

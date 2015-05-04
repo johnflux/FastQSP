@@ -28,6 +28,7 @@
 #include <QShortcut>
 #include <QDesktopServices>
 #include <QTime>
+#include <QSettings>
 
 #if QT_VERSION < 0x050000
 #include <Phonon/MediaObject>
@@ -74,10 +75,12 @@ private slots:
   void toggleFullscreen();
   void toggleUpdate();
   void replayVideo(qint64 pos);
+  void saveIgnoreCRCState();
 
 private:
   QMenu *gameMenu;
   QAction *autosaveAction;
+  QAction *ignoreCRCAction;
   QGraphicsWebView *webView;
   QGraphicsView *graphicsView;
   QGraphicsScene *scene;
@@ -90,6 +93,7 @@ private:
   qreal scaleFactor;
   bool gameIsOpen;
   void maybePlayVideo(QString html);
+  QSettings settings;
 #if QT_VERSION < 0x050000
   Phonon::MediaObject *media;
   Phonon::AudioOutput *audioOutput;

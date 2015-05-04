@@ -29,6 +29,8 @@
 #include "text.h"
 #include "time.h"
 #include "variables.h"
+#include <QDebug>
+#include "jack.h"
 
 QSP_CHAR *qspQstPath = nullptr;
 int qspQstPathLen = 0;
@@ -177,6 +179,8 @@ void qspNewGame(QSP_BOOL isReset) {
     qspCallSetTimer(QSP_DEFTIMERINTERVAL);
   }
   qspRefreshCurLoc(QSP_TRUE, nullptr, 0);
+  Jack jack;
+  jack.executeJSON();
 }
 
 static FILE *qspFileOpen(QSP_CHAR *fileName, QSP_CHAR *fileMode) {
@@ -468,9 +472,12 @@ static QSP_BOOL qspCheckGameStatus(QSP_CHAR **strs, int strsCount) {
       qspStrsComp(strs[1], QSP_GAMEMINVER) < 0 ||
       qspStrsComp(strs[1], QSP_VER) > 0)
     return QSP_FALSE;
-  if (!qspGetVarNumValue(QSP_FMT("DEBUG")) &&
-      qspReCodeGetIntVal(strs[2]) != qspQstCRC)
-    return QSP_FALSE;
+  if(!qspIgnoreCRC)
+  {
+    if (!qspGetVarNumValue(QSP_FMT("DEBUG")) &&
+        qspReCodeGetIntVal(strs[2]) != qspQstCRC)
+      return QSP_FALSE;
+  }
   selAction = qspReCodeGetIntVal(strs[4]); /* qspCurSelAction */
   selObject = qspReCodeGetIntVal(strs[5]); /* qspCurSelObject */
   if (qspReCodeGetIntVal(strs[15]) < 0)
@@ -655,6 +662,7 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
     qspCurObjects[i].Desc = qspCodeReCode(strs[ind++], QSP_FALSE);
   }
   varsCount = qspReCodeGetIntVal(strs[ind++]);
+
   for (i = 0; i < varsCount; ++i) {
     varInd = qspReCodeGetIntVal(strs[ind++]);
     qspVars[varInd].Name = qspCodeReCode(strs[ind++], QSP_FALSE);
@@ -704,6 +712,8 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
   qspPlayPLFiles();
   qspCallSetTimer(qspTimerInterval);
   qspExecLocByVarNameWithArgs(QSP_FMT("ONGLOAD"), nullptr, 0);
+  Jack jack;
+  jack.executeJSON();
 }
 
 void qspOpenGameStatus(QSP_CHAR *fileName) {

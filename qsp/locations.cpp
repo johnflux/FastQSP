@@ -22,6 +22,7 @@
 #include "statements.h"
 #include "text.h"
 #include "variables.h"
+#include "jack.h"
 
 QSPLocation *qspLocs = nullptr;
 QSPLocName *qspLocsNames = nullptr;

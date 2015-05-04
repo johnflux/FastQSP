@@ -400,7 +400,8 @@ QSP_BOOL QSPSaveGameAsData(void *buf, int bufSize, int *realSize,
   return QSP_TRUE;
 }
 /* Загрузка состояния из файла */
-QSP_BOOL QSPOpenSavedGame(const QSP_CHAR *fileName, QSP_BOOL isRefresh) {
+QSP_BOOL QSPOpenSavedGame(const QSP_CHAR *fileName, QSP_BOOL isRefresh, bool ignoreCRC) {
+  qspIgnoreCRC = ignoreCRC;
   if (qspIsExitOnError && qspErrorNum)
     return QSP_FALSE;
   qspPrepareExecution();
@@ -447,6 +448,7 @@ QSP_BOOL QSPRestartGame(QSP_BOOL isRefresh) {
     return QSP_FALSE;
   if (isRefresh)
     qspCallRefreshInt(QSP_FALSE);
+
   return QSP_TRUE;
 }
 /* ------------------------------------------------------------ */
