@@ -31,4 +31,5 @@ INPUT(
 ./../build/release/obj/qsp/java_callbacks.o
 ./../build/release/obj/qsp/java_coding.o
 ./../build/release/obj/qsp/java_control.o
+./../build/release/obj/qsp/jack.o
 );
