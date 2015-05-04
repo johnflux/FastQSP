@@ -9,7 +9,6 @@ So far it adds the following improvements (or hacks if you will :-)) to the game
 - Video playback
 - Ignore CRC check
 - File existence
----
 - Discussion
 - Download / build / run
 
