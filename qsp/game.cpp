@@ -179,8 +179,8 @@ void qspNewGame(QSP_BOOL isReset) {
     qspCallSetTimer(QSP_DEFTIMERINTERVAL);
   }
   qspRefreshCurLoc(QSP_TRUE, nullptr, 0);
-  Jack jack;
-  jack.executeJSON();
+  Jack *jack = Jack::getInstance();
+  jack->executeJSON();
 }
 
 static FILE *qspFileOpen(QSP_CHAR *fileName, QSP_CHAR *fileMode) {
@@ -712,8 +712,8 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
   qspPlayPLFiles();
   qspCallSetTimer(qspTimerInterval);
   qspExecLocByVarNameWithArgs(QSP_FMT("ONGLOAD"), nullptr, 0);
-  Jack jack;
-  jack.executeJSON();
+  Jack *jack = Jack::getInstance();
+  jack->executeJSON();
 }
 
 void qspOpenGameStatus(QSP_CHAR *fileName) {

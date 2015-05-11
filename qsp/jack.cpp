@@ -4,14 +4,11 @@
 #include <QDebug>
 #include <QByteArray>
 #include <QDirIterator>
+#include <QJsonArray>
 
 #include "locations.h"
 #include "variables.h"
 #include "jack.h"
-
-
-Jack::Jack()
-{}
 
 void Jack::executeJSON()
 {
@@ -58,6 +55,32 @@ void Jack::iterateKeys(const QJsonDocument &doc, int array_indice)
     {
       int value = obj.value(key).toInt();
       setNumericVariable(key, array_indice, value);
+    }
+    else if (obj.value(key).isArray())
+    {
+      qDebug() << "SHeit" << key;
+      QJsonArray img_array = obj[key].toArray();
+      QVariantList list = img_array.toVariantList();
+
+      if(image_arrays[list[0].toString()] == NULL)
+        image_arrays[list[0].toString()] = new QList<QString>;
+      else
+        image_arrays[list[0].toString()]->clear();
+
+      QString mapkey;
+      for (int i = 0; i < list.size(); ++i)
+      {
+        qDebug() << "IMGLIST" << list[0].toString();
+//      for (const QJsonValue & value : img_array)
+//      {
+//        QJsonObject obj = img_array[i].toObject();
+        if(i == 0)
+        {
+          setStringVariable(key, array_indice, list[i].toString());//obj.valueAt(0).toString()); //img_array[0].toObject().value("0").toString());
+        }
+
+        image_arrays[list[0].toString()]->append(list[i].toString());
+      }
     }
   }
 }

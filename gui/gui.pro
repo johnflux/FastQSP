@@ -43,4 +43,6 @@ DESTDIR = $$BUILDDIR/bin
 OBJECTS_DIR = $$BUILDDIR/obj/gui
 MOC_DIR = $$BUILDDIR/moc/gui
 
+INCLUDEPATH += $$PWD/../qsp
+DEPENDPATH += $$PWD/../qsp
 LIBS += -L$$DESTDIR -lqsp -loniguruma

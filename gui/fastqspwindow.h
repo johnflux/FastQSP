@@ -39,6 +39,7 @@
 #include <QMap>
 #include "audiostream.h"
 #endif
+#include "jack.h"
 
 class FastQSPWindow : public QMainWindow {
   Q_OBJECT
@@ -51,6 +52,7 @@ public:
   void refreshView();
   int getTimeFromStart();
   QSP_HTMLBuilder builder;
+
 signals:
 
 public slots:
@@ -76,11 +78,14 @@ private slots:
   void toggleUpdate();
   void replayVideo(qint64 pos);
   void saveIgnoreCRCState();
+  void saveMutedState(); //Reminder: One more option to be saved: Do proper settings handling!
 
 private:
+  Jack *qspJack;
   QMenu *gameMenu;
   QAction *autosaveAction;
   QAction *ignoreCRCAction;
+  QAction *muteAction;
   QGraphicsWebView *webView;
   QGraphicsView *graphicsView;
   QGraphicsScene *scene;
@@ -92,8 +97,13 @@ private:
   qreal aspectRatio;
   qreal scaleFactor;
   bool gameIsOpen;
-  void maybePlayVideo(QString html);
+  QStringList scanHTMLForImages(QString html);
+  bool choseRandomImageFromArray(QStringList urlmatches);
+  void maybePlayVideo(QString html, QStringList urlmatches);
   QSettings settings;
+  bool replaceHTML = false;
+  QString origImage, newImage; //newImage contains a randomly chosen image,
+                               //from a given JSON array. Is set from choseRandomImageFromArray.
 #if QT_VERSION < 0x050000
   Phonon::MediaObject *media;
   Phonon::AudioOutput *audioOutput;

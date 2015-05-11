@@ -105,6 +105,12 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   otherMenu->addAction("Show html", this, SLOT(showHtml()));
   connect(fullscreen, SIGNAL(activated()), SLOT(toggleFullscreen()));
 
+  muteAction = new QAction("Mute sound", this);
+  muteAction ->setCheckable(true);
+  muteAction ->setChecked(settings.value("mutedState", false).toBool());
+  connect(muteAction, SIGNAL(toggled(bool)), this, SLOT(saveMutedState()));
+  otherMenu->addAction(muteAction);
+
   menuBar()->addMenu(otherMenu);
 
   //-Help menu--------------------------------------------------------
@@ -127,6 +133,7 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   QSPCallback::QSPCallback();
 
   qDebug() << "QSP init finished";
+  qspJack = Jack::getInstance();
 }
 
 void FastQSPWindow::loadFonts() {
@@ -232,6 +239,11 @@ void FastQSPWindow::showHtml() {
 }
 
 void FastQSPWindow::linkClicked(const QUrl &url) {
+  if(url.toString().contains("interaction"))
+  {
+    replaceHTML = true;
+    newImage = "";
+  }
   qDebug() << "Link clicked" << url.toString();
   if (url.toString().startsWith(QLatin1String("exec:"), Qt::CaseInsensitive)) {
     QString execStr;
@@ -274,6 +286,13 @@ void FastQSPWindow::linkClicked(const QUrl &url) {
 }
 
 void FastQSPWindow::playAudio(QString filename, int vol, QString flags) {
+  if(muteAction->isChecked())
+  {
+    for(AudioStream *stream : audio)
+      stream->stop();
+
+    return;
+  }
   filename = filename.replace('\\', '/');
 #if QT_VERSION < 0x050000
   if (QFile(filename).exists() && media->state() != Phonon::PlayingState) {
@@ -388,10 +407,16 @@ void FastQSPWindow::refreshView() { qDebug() << "refreshView()"; }
 
 void FastQSPWindow::loadPage() {
   QString html = builder.getHTML();
-  if(builder.thereIsAMessage == false)
+  if(replaceHTML && builder.thereIsAMessage == false)
   {
-    maybePlayVideo(html);
+    replaceHTML = false;
+    QStringList urlmatches = scanHTMLForImages(html);
+    if(!choseRandomImageFromArray(urlmatches))
+      maybePlayVideo(html, urlmatches);
   }
+  if(newImage != "")
+    html.replace(origImage, newImage);
+
   webView->setHtml(html, QUrl("http://qspgame.local"));
   if (autosaveAction->isChecked())
     autosave();
@@ -411,19 +436,48 @@ void FastQSPWindow::replayVideo(qint64 pos)
   }
 }
 
-void FastQSPWindow::maybePlayVideo(QString html)
+QStringList FastQSPWindow::scanHTMLForImages(QString html)
 {
   QRegExp imgTagRegex("\\<img[^\\>]*src\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>", Qt::CaseInsensitive);
   imgTagRegex.setMinimal(true);
+//  QStringList imgmatches;
   QStringList urlmatches;
-  QStringList imgmatches;
   int offset = 0;
   while( (offset = imgTagRegex.indexIn(html, offset)) != -1){
     offset += imgTagRegex.matchedLength();
-    imgmatches.append(imgTagRegex.cap(0)); // Should hold complete img tag
+//    imgmatches.append(imgTagRegex.cap(0)); // Should hold complete img tag
     urlmatches.append(imgTagRegex.cap(1)); // Should hold only src property
   }
+  return urlmatches;
+}
+
+bool FastQSPWindow::choseRandomImageFromArray(QStringList urlmatches)
+{
+  foreach(QString img_src, urlmatches)
+  {
+    origImage = img_src;
+    img_src = img_src.replace('\\', '/');
+
+    QString stripped = img_src.replace(".gif", "");
+    stripped = stripped.replace("content/pic/", "");
+    qDebug() << "Orig:" << origImage;
+    if(qspJack->image_arrays[stripped] != NULL)
+    {
+      qDebug() << "Found matching key";
+      QList<QString> *images = qspJack->image_arrays[stripped];
+      int random = qrand() % images->count();
+      newImage = "content/pic/" + images->at(random) + ".gif";
+      return true;
+    }
+  }
+  newImage = "";
+  return false;
+}
+
+void FastQSPWindow::maybePlayVideo(QString html, QStringList urlmatches)
+{
   bool found_image_to_overlap = false;
+
   foreach(QString img_src, urlmatches)
   {
     img_src = img_src.replace('\\', '/');
@@ -464,6 +518,12 @@ void FastQSPWindow::saveIgnoreCRCState()
 {
   settings.setValue("ignoreCRC", ignoreCRCAction->isChecked());
 }
+
+void FastQSPWindow::saveMutedState()
+{
+  settings.setValue("mutedState", muteAction->isChecked());
+}
+
 
 void FastQSPWindow::autosave() {
   qDebug() << "autosave:" << saveDir.absolutePath() + "/auto.sav";
