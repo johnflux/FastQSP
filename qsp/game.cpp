@@ -713,7 +713,7 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
   } else
     qspCallShowPicture(nullptr);
   qspCallCloseFile(nullptr);
-  //qspPlayPLFiles();
+  qspPlayPLFiles();
   qspCallSetTimer(qspTimerInterval);
   qspExecLocByVarNameWithArgs(QSP_FMT("ONGLOAD"), nullptr, 0);
   Jack *jack = Jack::getInstance();
