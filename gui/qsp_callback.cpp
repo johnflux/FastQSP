@@ -6,7 +6,7 @@
 #endif
 
 void QSPCallback::QSPCallback() {
-  qDebug() << QSP_CALL_SHOWMSGSTR;
+//  qDebug() << QSP_CALL_SHOWMSGSTR;
   QSPSetCallBack(QSP_CALL_DEBUG, (QSP_CALLBACK)&QSPCallback::debug);
   QSPSetCallBack(QSP_CALL_ISPLAYINGFILE,
                  (QSP_CALLBACK)&QSPCallback::isPlayingFile);
@@ -34,55 +34,55 @@ void QSPCallback::QSPCallback() {
 }
 
 void QSPCallback::debug(const QSP_CHAR *str) {
-  qDebug() << "debug(), str: " << QString::fromWCharArray(str);
+//  qDebug() << "debug(), str: " << QString::fromWCharArray(str);
 }
 
 QSP_BOOL QSPCallback::isPlayingFile(const QSP_CHAR *file) {
-  qDebug() << "isPlayingFile(), file: " << QString::fromWCharArray(file);
+//  qDebug() << "isPlayingFile(), file: " << QString::fromWCharArray(file);
   return true;
 }
 
 void QSPCallback::playFile(const QSP_CHAR *file, int volume, const QSP_CHAR *flags) {
   qspWin->playAudio(QString::fromWCharArray(file), volume, QString::fromWCharArray(flags));
-  qDebug() << "playFile()"
-           << ", file: " << QString::fromWCharArray(file)
-           << ", volume: " << volume;
+//  qDebug() << "playFile()"
+//           << ", file: " << QString::fromWCharArray(file)
+//           << ", volume: " << volume;
 }
 
 void QSPCallback::closeFile(const QSP_CHAR *file) {
   if(file == NULL)
   {
     qspWin->stopAudio(NULL);
-    qDebug() << "closeFile(), all files.";
+//    qDebug() << "closeFile(), all files.";
   }
   else
   {
     qspWin->stopAudio(QString::fromWCharArray(file));
-    qDebug() << "closeFile(), file: " << QString::fromWCharArray(file);
+//    qDebug() << "closeFile(), file: " << QString::fromWCharArray(file);
   }
 }
 
 void QSPCallback::showImage(const QSP_CHAR *file) {
-  qDebug() << "showImage(), file: " << QString::fromWCharArray(file);
+//  qDebug() << "showImage(), file: " << QString::fromWCharArray(file);
 }
 
 void QSPCallback::showWindow(int type, QSP_BOOL isShow) {
-  qDebug() << "showWindow()"
-           << ", type: " << type << ", isShow: " << isShow;
+//  qDebug() << "showWindow()"
+//           << ", type: " << type << ", isShow: " << isShow;
 }
 
-void QSPCallback::deleteMenu() { qDebug() << "deleteMenu()"; }
+void QSPCallback::deleteMenu() { };//qDebug() << "deleteMenu()"; }
 
 void QSPCallback::addMenuItem(const QSP_CHAR *name, const QSP_CHAR *imgPath) {
-  qDebug() << "addMenuItem()"
-           << ", name: " << QString::fromWCharArray(name)
-           << ", imgPath: " << QString::fromWCharArray(imgPath);
+//  qDebug() << "addMenuItem()"
+//           << ", name: " << QString::fromWCharArray(name)
+//           << ", imgPath: " << QString::fromWCharArray(imgPath);
 }
 
-void QSPCallback::showMenu() { qDebug() << "showMenu()"; }
+void QSPCallback::showMenu() { };//qDebug() << "showMenu()"; }
 
 void QSPCallback::showMessage(const QSP_CHAR *str) {
-  qDebug() << "showMessage(), str: " << QString::fromWCharArray(str);
+//  qDebug() << "showMessage(), str: " << QString::fromWCharArray(str);
   qspWin->builder.showMessage(QString::fromWCharArray(str));
 }
 
@@ -93,20 +93,20 @@ void QSPCallback::refreshInt(QSP_BOOL isRedraw) {
 }
 
 void QSPCallback::setTimer(int msec) {
-  qDebug() << "setTimer(), msec: " << msec;
+//  qDebug() << "setTimer(), msec: " << msec;
   qspWin->startTimer(msec);
 }
 
 void QSPCallback::setInputStrText(const QSP_CHAR *text) {
-  qDebug() << "setInputStrText(), text: " << QString::fromWCharArray(text);
+//  qDebug() << "setInputStrText(), text: " << QString::fromWCharArray(text);
 }
 
 void QSPCallback::system(const QSP_CHAR *str) {
-  qDebug() << "system(), str: " << QString::fromWCharArray(str);
+//  qDebug() << "system(), str: " << QString::fromWCharArray(str);
 }
 
 void QSPCallback::openGameStatus(const QSP_CHAR *file) {
-  qDebug() << "openGameStatus(), str: " << QString::fromWCharArray(file);
+//  qDebug() << "openGameStatus(), str: " << QString::fromWCharArray(file);
   QString filename(QString::fromWCharArray(file));
   if (filename.isEmpty())
     qspWin->openFileDialog();
@@ -115,7 +115,7 @@ void QSPCallback::openGameStatus(const QSP_CHAR *file) {
 }
 
 void QSPCallback::saveGameStatus(const QSP_CHAR *file) {
-  qDebug() << "saveGameStatus(), str: " << QString::fromWCharArray(file);
+//  qDebug() << "saveGameStatus(), str: " << QString::fromWCharArray(file);
   QString filename(QString::fromWCharArray(file));
   if (filename.isEmpty())
     qspWin->saveGameDialog();
@@ -124,7 +124,7 @@ void QSPCallback::saveGameStatus(const QSP_CHAR *file) {
 }
 
 void QSPCallback::sleep(int msecs) {
-  qDebug() << "sleep(), msecs: " << msecs;
+//  qDebug() << "sleep(), msecs: " << msecs;
 #ifdef _MSC_VER
   Sleep(msecs);
 #elif __GNUC__
@@ -133,7 +133,7 @@ void QSPCallback::sleep(int msecs) {
 }
 
 int QSPCallback::getMsCount() {
-  qDebug() << "getMsCount()" << qspWin->getTimeFromStart();
+//  qDebug() << "getMsCount()" << qspWin->getTimeFromStart();
   return qspWin->getTimeFromStart();
 }
 

@@ -58,7 +58,6 @@ static void qspRemoveArrayItem(QSP_CHAR *, int);
 static void qspInitVarData(QSPVar *);
 static int qspGetVarTextIndex(QSPVar *, QSP_CHAR *, QSP_BOOL);
 static QSPVar *qspGetVarData(QSP_CHAR *, QSP_BOOL, int *);
-static void qspSetVar(QSP_CHAR *, QSPVariant *, QSP_CHAR);
 static void qspCopyVar(QSPVar *, QSPVar *, int, int);
 static void qspSetVarValue(QSP_CHAR *, QSPVariant *, QSP_CHAR);
 static QSP_CHAR *qspGetVarNameOnly(QSP_CHAR *);
@@ -294,7 +293,9 @@ void qspSetVarValueByReference(QSPVar *var, int ind, QSPVariant *val) {
   }
 }
 
-static void qspSetVar(QSP_CHAR *name, QSPVariant *val, QSP_CHAR op) {
+void qspSetVar(QSP_CHAR *name, QSPVariant *val, QSP_CHAR op) {
+//  QString varname = QString::fromWCharArray(name).replace('\"', "\'");
+//  qDebug() << varname;
   QSPVariant oldVal;
   QSPVar *var;
   int index;
@@ -395,6 +396,7 @@ int qspGetVarNumValue(const QSP_CHAR *name) {
 }
 
 QSPVariant qspGetVar(QSP_CHAR *name) {
+//  qDebug() << QString::fromWCharArray(name).replace('\"', "\'");
   QSPVar *var;
   int index;
   if (!(var = qspGetVarData(name, QSP_FALSE, &index)))

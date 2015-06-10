@@ -83,4 +83,5 @@ void qspStatementLocal(QSP_CHAR *);
 QSP_BOOL qspStatementCopyArr(QSPVariant *, int, QSP_CHAR **, int);
 QSP_BOOL qspStatementKillVar(QSPVariant *, int, QSP_CHAR **, int);
 
+void qspSetVar(QSP_CHAR *, QSPVariant *, QSP_CHAR);
 #endif

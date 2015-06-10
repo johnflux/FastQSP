@@ -373,6 +373,7 @@ int qspSaveGameStatusToString(QSP_CHAR **buf) {
   len = qspCodeWriteIntVal(buf, len, (int)qspCurIsShowInput, QSP_TRUE);
   len = qspCodeWriteIntVal(buf, len, qspTimerInterval, QSP_TRUE);
   len = qspCodeWriteIntVal(buf, len, qspPLFilesCount, QSP_TRUE);
+
   for (i = 0; i < qspPLFilesCount; ++i)
     len = qspCodeWriteVal(buf, len, qspPLFiles[i], QSP_TRUE);
   len = qspCodeWriteIntVal(buf, len, qspCurIncFilesCount, QSP_TRUE);
@@ -409,6 +410,7 @@ int qspSaveGameStatusToString(QSP_CHAR **buf) {
       len = qspCodeWriteVal(buf, len, nullptr, QSP_FALSE);
     len = qspCodeWriteVal(buf, len, qspCurObjects[i].Desc, QSP_TRUE);
   }
+
   len = qspCodeWriteIntVal(buf, len, qspGetVarsCount(), QSP_TRUE);
   for (i = 0; i < QSP_VARSCOUNT; ++i)
     if (qspVars[i].Name) {
@@ -617,6 +619,7 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
   qspTimerInterval = qspReCodeGetIntVal(strs[15]);
   qspPLFilesCount = qspReCodeGetIntVal(strs[16]);
   ind = 17;
+  //*
   for (i = 0; i < qspPLFilesCount; ++i)
     qspPLFiles[i] = qspCodeReCode(strs[ind++], QSP_FALSE);
   qspCurIncFilesCount = qspReCodeGetIntVal(strs[ind++]);
@@ -661,6 +664,7 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
     ++ind;
     qspCurObjects[i].Desc = qspCodeReCode(strs[ind++], QSP_FALSE);
   }
+  //*/
   varsCount = qspReCodeGetIntVal(strs[ind++]);
 
   for (i = 0; i < varsCount; ++i) {
@@ -709,7 +713,7 @@ void qspOpenGameStatusFromString(QSP_CHAR *str) {
   } else
     qspCallShowPicture(nullptr);
   qspCallCloseFile(nullptr);
-  qspPlayPLFiles();
+  //qspPlayPLFiles();
   qspCallSetTimer(qspTimerInterval);
   qspExecLocByVarNameWithArgs(QSP_FMT("ONGLOAD"), nullptr, 0);
   Jack *jack = Jack::getInstance();

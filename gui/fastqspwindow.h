@@ -29,6 +29,8 @@
 #include <QDesktopServices>
 #include <QTime>
 #include <QSettings>
+#include <QTimer>
+#include <QGraphicsTextItem>
 
 #if QT_VERSION < 0x050000
 #include <Phonon/MediaObject>
@@ -71,7 +73,11 @@ private slots:
   void showHtml();
   void autosave();
   void loadGameDialog();
+  void reloadQSP();
   void loadGame(const QString &filename);
+  void quicksave();
+  void quickload();
+  void startQuickloading();
   void restartGame();
   void linkClicked(const QUrl &url);
   void toggleFullscreen();
@@ -79,6 +85,10 @@ private slots:
   void replayVideo(qint64 pos);
   void saveIgnoreCRCState();
   void saveMutedState(); //Reminder: One more option to be saved: Do proper settings handling!
+  void hideSaveStatus();
+  void nextScreen();
+  void prevScreen();
+  void gotoMainScreen();
 
 private:
   Jack *qspJack;
@@ -101,7 +111,9 @@ private:
   bool choseRandomImageFromArray(QStringList urlmatches);
   void maybePlayVideo(QString html, QStringList urlmatches);
   QSettings settings;
+  QGraphicsTextItem *savestatus = new QGraphicsTextItem;
   bool replaceHTML = false;
+  QString qspFilePath = "";
   QString origImage, newImage; //newImage contains a randomly chosen image,
                                //from a given JSON array. Is set from choseRandomImageFromArray.
 #if QT_VERSION < 0x050000

@@ -1,13 +1,11 @@
 TEMPLATE = lib
 TARGET = oniguruma
 win32 {
-#    CONFIG += dll
+    CONFIG += dll
     DEFINES+= _WIN
 }
 
 DEFINES += NOT_RUBY EXPORT _UNICODE
-
-#QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
 
 CONFIG(release, debug|release) {
     BUILDDIR = ../build/release

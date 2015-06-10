@@ -19,6 +19,8 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   player = new QMediaPlayer();
 #endif
 
+  qspJack = Jack::getInstance();
+
   // Start timer
   timer.start();
 
@@ -50,6 +52,16 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   videoPlayer->setNotifyInterval(500);
   scene->addItem(videoItem);
   videoItem->hide();
+
+  savestatus = new QGraphicsTextItem;
+  savestatus->setDefaultTextColor(Qt::yellow);
+  QFont f;
+  f.setBold(true);
+  f.setPixelSize(20);
+  savestatus->setFont(f);
+  savestatus->setVisible(false);
+  scene->addItem(savestatus);
+
   connect(videoPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(replayVideo(qint64)));
 
   // Filter context menu event
@@ -62,6 +74,12 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   QShortcut *openFile = new QShortcut(QKeySequence("Ctrl+O"), this);
   connect(openFile, SIGNAL(activated()), SLOT(openFileDialog()));
 
+//  fileMenu->addAction("Reload QSP file\tc", this, SLOT(openFileDialog())); //for powerairmax
+//  QShortcut *reloadFile = new QShortcut(QKeySequence("c"), this); //for powerairmax
+  fileMenu->addAction("Reload QSP file\tF3", this, SLOT(reloadQSP()));
+  QShortcut *reloadFile = new QShortcut(QKeySequence("F3"), this);
+  connect(reloadFile, SIGNAL(activated()), SLOT(reloadQSP()));
+
   fileMenu->addAction("Exit\tCtrl+Q", this, SLOT(close()));
   QShortcut *exit = new QShortcut(QKeySequence("Ctrl+Q"), this);
   connect(exit, SIGNAL(activated()), SLOT(close()));
@@ -70,17 +88,39 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
 
   //-Game menu--------------------------------------------------------
   gameMenu = new QMenu("Game");
-  gameMenu->addAction("Save\tCtrl+S", this, SLOT(saveGameDialog()));
+  gameMenu->addAction("Save (Original format)\tCtrl+S", this, SLOT(saveGameDialog()));
   QShortcut *save = new QShortcut(QKeySequence("Ctrl+S"), this);
   connect(save, SIGNAL(activated()), SLOT(saveGameDialog()));
 
-  gameMenu->addAction("Load\tCtrl+L", this, SLOT(loadGameDialog()));
+  gameMenu->addAction("Load (Original format)\tCtrl+L", this, SLOT(loadGameDialog()));
   QShortcut *load = new QShortcut(QKeySequence("Ctrl+L"), this);
   connect(load, SIGNAL(activated()), SLOT(loadGameDialog()));
+
+//  gameMenu->addAction("Quicksave\tz", this, SLOT(saveGameDialog())); //for powerairmax
+//  QShortcut *quicksave = new QShortcut(QKeySequence("z"), this); //for powerairmax
+  gameMenu->addAction("Quicksave (New JSON format - NOT stable)\tF5", this, SLOT(quicksave()));
+  QShortcut *quicksave = new QShortcut(QKeySequence("F5"), this);
+  connect(quicksave, SIGNAL(activated()), SLOT(quicksave()));
+
+//  gameMenu->addAction("Quickload\tx", this, SLOT(loadGameDialog())); //for powerairmax
+//  QShortcut *quickload = new QShortcut(QKeySequence("x"), this); //for powerairmax
+  gameMenu->addAction("Quickload (New JSON format - NOT stable)\tF2", this, SLOT(quickload()));
+  QShortcut *quickload = new QShortcut(QKeySequence("F2"), this);
+  connect(quickload, SIGNAL(activated()), SLOT(quickload()));
 
   gameMenu->addAction("Restart\tCtrl+R", this, SLOT(restartGame()));
   QShortcut *restart = new QShortcut(QKeySequence("Ctrl+R"), this);
   connect(restart, SIGNAL(activated()), SLOT(restartGame()));
+
+  //Game shortcuts
+  QShortcut *next = new QShortcut(QKeySequence("space"), this);
+  connect(next, SIGNAL(activated()), SLOT(nextScreen()));
+
+  QShortcut *prev= new QShortcut(QKeySequence("backspace"), this);
+  connect(prev, SIGNAL(activated()), SLOT(prevScreen()));
+
+  QShortcut *main_screen= new QShortcut(QKeySequence("escape"), this);
+  connect(main_screen, SIGNAL(activated()), SLOT(gotoMainScreen()));
 
   ignoreCRCAction = new QAction("Ignore version check when loading", this);
   ignoreCRCAction->setCheckable(true);
@@ -132,8 +172,7 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   QSPInit();
   QSPCallback::QSPCallback();
 
-  qDebug() << "QSP init finished";
-  qspJack = Jack::getInstance();
+//  qDebug() << "QSP init finished";
 }
 
 void FastQSPWindow::loadFonts() {
@@ -165,11 +204,11 @@ void FastQSPWindow::toggleFullscreen() {
   if (isFullScreen()) {
     menuBar()->show();
     showNormal();
-    qDebug() << "fullscreen mode off";
+//    qDebug() << "fullscreen mode off";
   } else {
     menuBar()->hide();
     showFullScreen();
-    qDebug() << "fullscreen mode on";
+//    qDebug() << "fullscreen mode on";
   }
 }
 
@@ -198,11 +237,13 @@ void FastQSPWindow::saveGameDialog() {
   if (!filename.isEmpty() &&
       !filename.endsWith(QLatin1String(".sav"), Qt::CaseInsensitive))
     filename += QLatin1String(".sav");
+// New save system
+//  qspJack->saveGameStatus(filename);
   saveGame(filename);
 }
 
 void FastQSPWindow::saveGame(const QString &filename) {
-  qDebug() << "Saving game to" << filename;
+//  qDebug() << "Saving game to" << filename;
   if (!filename.isEmpty())
     QSPSaveGame(filename.toStdWString().c_str(), true);
 }
@@ -215,13 +256,53 @@ void FastQSPWindow::loadGameDialog() {
     loadGame(filename);
 }
 
+void FastQSPWindow::reloadQSP()
+{
+  if(qspFilePath == "")
+  {
+    openFileDialog();
+    return;
+  }
+  openFile(qspFilePath);
+}
+
 void FastQSPWindow::loadGame(const QString &filename) {
-  qDebug() << "Loading game from" << filename;
+//  qDebug() << "Loading game from" << filename;
   builder.clear();
+// New save/load system
+//  qspJack->loadGameStatus(filename);
+//  loadPage();
   if (!filename.isEmpty() &&
       QSPOpenSavedGame(filename.toStdWString().c_str(), true, ignoreCRCAction->isChecked())) {
     loadPage();
-  }
+    }
+}
+
+void FastQSPWindow::quicksave()
+{
+  qspJack->saveGameStatus(gameDirectory + "save/quicksave.json");
+  savestatus->setPlainText("Game is saved.");
+  savestatus->setVisible(true);
+  QTimer::singleShot(1000, this, SLOT(hideSaveStatus()));
+//  connect(&savestatus_timeout, SIGNAL(timeout()), savestatus, SLOT(hide()));
+//  savestatus_timeout.start(1000);
+}
+
+void FastQSPWindow::quickload()
+{
+  savestatus->setPlainText("Loading game...");
+  savestatus->setVisible(true);
+  QTimer::singleShot(0, this, SLOT(startQuickloading()));
+// QGraphicsTextItem::setv
+  //qspJack->loadGameStatus(gameDirectory + "save/quicksave.sav");
+}
+
+void FastQSPWindow::startQuickloading()
+{
+  builder.clear();
+  qspJack->loadGameStatus(gameDirectory + "save/quicksave.json");
+  loadPage();
+  savestatus->setVisible(false);
 }
 
 void FastQSPWindow::restartGame() {
@@ -266,7 +347,7 @@ void FastQSPWindow::linkClicked(const QUrl &url) {
   } else if (url.host() == QLatin1String("qspgame.local")) {
     QString path = url.path();
     path.remove(0, 1);
-    qDebug() << path;
+//    qDebug() << path;
     bool ok = false;
     int number;
     number = path.toUInt(&ok);
@@ -346,6 +427,7 @@ void FastQSPWindow::stopAudio(QString filename) {
 }
 
 void FastQSPWindow::openFile(const QString &filename) {
+  qspFilePath = filename;
   builder.clear();
   if (gameIsOpen)
     autosave();
@@ -403,7 +485,7 @@ void FastQSPWindow::openFile(const QString &filename) {
 
 // That function is called by callback if isRefsresh == true
 // according to the debug log that never happens. maybe I should remove it?
-void FastQSPWindow::refreshView() { qDebug() << "refreshView()"; }
+void FastQSPWindow::refreshView() { };//qDebug() << "refreshView()"; }
 
 void FastQSPWindow::loadPage() {
   QString html = builder.getHTML();
@@ -460,10 +542,10 @@ bool FastQSPWindow::choseRandomImageFromArray(QStringList urlmatches)
 
     QString stripped = img_src.replace(".gif", "");
     stripped = stripped.replace("content/pic/", "");
-    qDebug() << "Orig:" << origImage;
+//    qDebug() << "Orig:" << origImage;
     if(qspJack->image_arrays[stripped] != NULL)
     {
-      qDebug() << "Found matching key";
+//      qDebug() << "Found matching key";
       QList<QString> *images = qspJack->image_arrays[stripped];
       int random = qrand() % images->count();
       newImage = "content/pic/" + images->at(random) + ".gif";
@@ -524,9 +606,43 @@ void FastQSPWindow::saveMutedState()
   settings.setValue("mutedState", muteAction->isChecked());
 }
 
+void FastQSPWindow::hideSaveStatus()
+{
+  savestatus->hide();
+}
+
+void FastQSPWindow::nextScreen()
+{
+  if(qspJack->qspCurrentObjectsCount() == 2)
+  {
+    QSPSetSelObjectIndex(1, true);
+    loadPage();
+  }
+  else if (qspJack->qspCurrentObjectsCount() == 1) // Only forward button (next_day)
+  {
+    QSPSetSelObjectIndex(0, true);
+    loadPage();
+  }
+}
+
+void FastQSPWindow::prevScreen()
+{
+  if(qspJack->qspCurrentObjectsCount() == 2)
+  {
+    QSPSetSelObjectIndex(0, true);
+    loadPage();
+  }
+}
+
+void FastQSPWindow::gotoMainScreen()
+{
+  if(qspJack->isGotoMainScreenAcceptable())
+    linkClicked(QUrl("EXEC: gt 'menu_form'"));
+}
+
 
 void FastQSPWindow::autosave() {
-  qDebug() << "autosave:" << saveDir.absolutePath() + "/auto.sav";
+//  qDebug() << "autosave:" << saveDir.absolutePath() + "/auto.sav";
   saveGame(saveDir.absolutePath() + "/auto.sav");
 }
 
