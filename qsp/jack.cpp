@@ -86,8 +86,9 @@ void Jack::iterateKeys(const QJsonDocument &doc, int array_indice)
       QString mapkey;
       for (int i = 0; i < list.size(); ++i)
       {
-        setStringVariable(key, i, list[i].toString());
-//        qDebug() << "Array:" << key << i << list[i].toString();
+        if(i == 0)
+          setStringVariable(key, array_indice, list[i].toString());
+
         image_arrays[list[0].toString()]->append(list[i].toString());
       }
     }
