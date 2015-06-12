@@ -19,7 +19,6 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   player = new QMediaPlayer();
 #endif
 
-  qspJack = Jack::getInstance();
 
   // Start timer
   timer.start();
@@ -280,7 +279,7 @@ void FastQSPWindow::loadGame(const QString &filename) {
 
 void FastQSPWindow::quicksave()
 {
-  qspJack->saveGameStatus(gameDirectory + "save/quicksave.json");
+  qspJack.saveGameStatus(gameDirectory + "save/quicksave.json");
   savestatus->setPlainText("Game is saved.");
   savestatus->setVisible(true);
   QTimer::singleShot(1000, this, SLOT(hideSaveStatus()));
@@ -300,7 +299,7 @@ void FastQSPWindow::quickload()
 void FastQSPWindow::startQuickloading()
 {
   builder.clear();
-  qspJack->loadGameStatus(gameDirectory + "save/quicksave.json");
+  qspJack.loadGameStatus(gameDirectory + "save/quicksave.json");
   loadPage();
   savestatus->setVisible(false);
 }
@@ -542,13 +541,12 @@ bool FastQSPWindow::choseRandomImageFromArray(QStringList urlmatches)
 
     QString stripped = img_src.replace(".gif", "");
     stripped = stripped.replace("content/pic/", "");
-//    qDebug() << "Orig:" << origImage;
-    if(qspJack->image_arrays[stripped] != NULL)
+
+    QList<QString> images = qspJack.getImageArrays(stripped);
+    if(!images.isEmpty())
     {
-//      qDebug() << "Found matching key";
-      QList<QString> *images = qspJack->image_arrays[stripped];
-      int random = qrand() % images->count();
-      newImage = "content/pic/" + images->at(random) + ".gif";
+      int random = qrand() % images.count();
+      newImage = "content/pic/" + images.at(random) + ".gif";
       return true;
     }
   }
@@ -613,12 +611,12 @@ void FastQSPWindow::hideSaveStatus()
 
 void FastQSPWindow::nextScreen()
 {
-  if(qspJack->qspCurrentObjectsCount() == 2)
+  if(qspJack.qspCurrentObjectsCount() == 2)
   {
     QSPSetSelObjectIndex(1, true);
     loadPage();
   }
-  else if (qspJack->qspCurrentObjectsCount() == 1) // Only forward button (next_day)
+  else if (qspJack.qspCurrentObjectsCount() == 1) // Only forward button (next_day)
   {
     QSPSetSelObjectIndex(0, true);
     loadPage();
@@ -627,7 +625,7 @@ void FastQSPWindow::nextScreen()
 
 void FastQSPWindow::prevScreen()
 {
-  if(qspJack->qspCurrentObjectsCount() == 2)
+  if(qspJack.qspCurrentObjectsCount() == 2)
   {
     QSPSetSelObjectIndex(0, true);
     loadPage();
@@ -636,7 +634,7 @@ void FastQSPWindow::prevScreen()
 
 void FastQSPWindow::gotoMainScreen()
 {
-  if(qspJack->isGotoMainScreenAcceptable())
+  if(qspJack.isGotoMainScreenAcceptable())
     linkClicked(QUrl("EXEC: gt 'menu_form'"));
 }
 

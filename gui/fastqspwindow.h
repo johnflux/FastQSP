@@ -91,7 +91,8 @@ private slots:
   void gotoMainScreen();
 
 private:
-  Jack *qspJack;
+//  Jack *qspJack;
+  Jack& qspJack = Jack::getInstance();
   QMenu *gameMenu;
   QAction *autosaveAction;
   QAction *ignoreCRCAction;

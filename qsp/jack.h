@@ -15,15 +15,10 @@
 class JACKQSP_EXPORT Jack
 {
 public:
-  JACKQSP_EXPORT static Jack *getInstance()
-  {
-    static Jack instance;
-
-    return &instance;
-  }
+  JACKQSP_EXPORT static Jack& getInstance();
 
   void executeJSON();
-  JACKQSP_EXPORT QMap<QString, QList<QString>*> image_arrays;
+  QList<QString> getImageArrays(QString key);
   JACKQSP_EXPORT int qspCurrentObjectsCount();
   JACKQSP_EXPORT bool isGotoMainScreenAcceptable();
 
@@ -45,6 +40,7 @@ private:
   void prepareLocations(QString current_location, int interaction_city);
   void setStylesheet();
   QJsonObject loadJSONObjFromFile(QString filename);
+  QMap<QString, QList<QString>> image_arrays;
 
 };
 

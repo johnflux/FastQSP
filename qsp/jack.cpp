@@ -44,7 +44,15 @@ void Jack::executeJSON()
     }
   }
 //  qDebug() << "Status:";
-//  loadGameStatus();
+  //  loadGameStatus();
+}
+
+QList<QString> Jack::getImageArrays(QString key)
+{
+  if(image_arrays.contains(key))
+    return image_arrays[key];
+  else
+    return QList<QString>();
 }
 
 void Jack::iterateKeys(const QJsonDocument &doc, int array_indice)
@@ -78,18 +86,17 @@ void Jack::iterateKeys(const QJsonDocument &doc, int array_indice)
       QJsonArray img_array = obj[key].toArray();
       QVariantList list = img_array.toVariantList();
 
-      if(image_arrays[list[0].toString()] == NULL)
-        image_arrays[list[0].toString()] = new QList<QString>;
-      else
-        image_arrays[list[0].toString()]->clear();
+//      if(image_arrays[list[0].toString()] == NULL)
+//        image_arrays[list[0].toString()] = new QList<QString>;
+//      else
+      image_arrays[list[0].toString()].clear();
 
-      QString mapkey;
       for (int i = 0; i < list.size(); ++i)
       {
         if(i == 0)
-          setStringVariable(key, array_indice, list[i].toString());
+          setStringVariable(key, array_indice, list[0].toString());
 
-        image_arrays[list[0].toString()]->append(list[i].toString());
+        image_arrays[list[0].toString()].append(list[i].toString());
       }
     }
     else if (obj.value(key).isObject())
@@ -388,4 +395,11 @@ bool Jack::isGotoMainScreenAcceptable()
   setNumericVariable("menu_form", 0);
 
   return true;
+}
+
+Jack& Jack::getInstance()
+{
+    static Jack instance;
+
+    return instance;
 }
