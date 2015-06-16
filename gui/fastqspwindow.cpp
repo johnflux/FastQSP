@@ -488,13 +488,17 @@ void FastQSPWindow::refreshView() { };//qDebug() << "refreshView()"; }
 
 void FastQSPWindow::loadPage() {
   QString html = builder.getHTML();
-  if(replaceHTML && builder.thereIsAMessage == false)
+  QStringList urlmatches = scanHTMLForImages(html);
+
+  if(replaceHTML)
   {
     replaceHTML = false;
-    QStringList urlmatches = scanHTMLForImages(html);
-    if(!choseRandomImageFromArray(urlmatches))
-      maybePlayVideo(html, urlmatches);
+    choseRandomImageFromArray(urlmatches);
   }
+
+  if(builder.thereIsAMessage == false)
+    maybePlayVideo(html, urlmatches);
+
   if(newImage != "")
     html.replace(origImage, newImage);
 
