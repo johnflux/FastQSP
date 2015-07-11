@@ -82,7 +82,7 @@ void QSPCallback::addMenuItem(const QSP_CHAR *name, const QSP_CHAR *imgPath) {
 void QSPCallback::showMenu() { };//qDebug() << "showMenu()"; }
 
 void QSPCallback::showMessage(const QSP_CHAR *str) {
-//  qDebug() << "showMessage(), str: " << QString::fromWCharArray(str);
+  qDebug() << "showMessage(), str: " << QString::fromWCharArray(str);
   qspWin->builder.showMessage(QString::fromWCharArray(str));
 }
 

@@ -93,6 +93,11 @@ static int qspSearchPlayList(QSP_CHAR *file) {
 }
 
 void qspPlayPLFiles() {
+  /* Surgically remove problem area.
+   * Seriously though. I don't understand how the playlist works and it gives problems for some users.
+   * Probably some of my additions to the sound system that makes it disfunction.
+   * Sorry for the bad code.
+   * - beaver14
   int i;
   QSP_CHAR *pos;
   for (i = 0; i < qspPLFilesCount; ++i) {
@@ -104,6 +109,7 @@ void qspPlayPLFiles() {
     } else
       qspPlayFile(qspPLFiles[i], 100, QSP_FALSE, L"");
   }
+  */
 }
 
 void qspRefreshPlayList() {
@@ -134,7 +140,7 @@ void qspRefreshPlayList() {
 
 QSP_BOOL qspStatementPlayFile(QSPVariant *args, int count, QSP_CHAR **jumpTo,
                               int extArg) {
-  int volume = (count == 2 ? QSP_NUM(args[1]) : 100);
+  int volume = (count >= 2 ? QSP_NUM(args[1]) : 100);
   const QSP_CHAR *flags = (count == 3 ? QSP_STR(args[2]) : L"");
   qspPlayFile(QSP_STR(args[0]), volume, QSP_TRUE, flags);
   return QSP_FALSE;

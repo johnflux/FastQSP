@@ -73,10 +73,10 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   QShortcut *openFile = new QShortcut(QKeySequence("Ctrl+O"), this);
   connect(openFile, SIGNAL(activated()), SLOT(openFileDialog()));
 
-//  fileMenu->addAction("Reload QSP file\tc", this, SLOT(openFileDialog())); //for powerairmax
-//  QShortcut *reloadFile = new QShortcut(QKeySequence("c"), this); //for powerairmax
-  fileMenu->addAction("Reload QSP file\tF3", this, SLOT(reloadQSP()));
-  QShortcut *reloadFile = new QShortcut(QKeySequence("F3"), this);
+  fileMenu->addAction("Reload QSP file\tc", this, SLOT(openFileDialog())); //for powerairmax
+  QShortcut *reloadFile = new QShortcut(QKeySequence("c"), this); //for powerairmax
+//  fileMenu->addAction("Reload QSP file\tF3", this, SLOT(reloadQSP()));
+//  QShortcut *reloadFile = new QShortcut(QKeySequence("F3"), this);
   connect(reloadFile, SIGNAL(activated()), SLOT(reloadQSP()));
 
   fileMenu->addAction("Exit\tCtrl+Q", this, SLOT(close()));
@@ -87,24 +87,24 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
 
   //-Game menu--------------------------------------------------------
   gameMenu = new QMenu("Game");
-  gameMenu->addAction("Save (Original format)\tCtrl+S", this, SLOT(saveGameDialog()));
+  gameMenu->addAction("Save\tCtrl+S", this, SLOT(saveGameDialog()));
   QShortcut *save = new QShortcut(QKeySequence("Ctrl+S"), this);
   connect(save, SIGNAL(activated()), SLOT(saveGameDialog()));
 
-  gameMenu->addAction("Load (Original format)\tCtrl+L", this, SLOT(loadGameDialog()));
+  gameMenu->addAction("Load\tCtrl+L", this, SLOT(loadGameDialog()));
   QShortcut *load = new QShortcut(QKeySequence("Ctrl+L"), this);
   connect(load, SIGNAL(activated()), SLOT(loadGameDialog()));
 
-//  gameMenu->addAction("Quicksave\tz", this, SLOT(saveGameDialog())); //for powerairmax
-//  QShortcut *quicksave = new QShortcut(QKeySequence("z"), this); //for powerairmax
-  gameMenu->addAction("Quicksave (New JSON format - NOT stable)\tF5", this, SLOT(quicksave()));
-  QShortcut *quicksave = new QShortcut(QKeySequence("F5"), this);
+  gameMenu->addAction("Quicksave\tz", this, SLOT(saveGameDialog())); //for powerairmax
+  QShortcut *quicksave = new QShortcut(QKeySequence("z"), this); //for powerairmax
+//  gameMenu->addAction("Quicksave (New JSON format - NOT stable)\tF5", this, SLOT(quicksave()));
+//  QShortcut *quicksave = new QShortcut(QKeySequence("F5"), this);
   connect(quicksave, SIGNAL(activated()), SLOT(quicksave()));
 
-//  gameMenu->addAction("Quickload\tx", this, SLOT(loadGameDialog())); //for powerairmax
-//  QShortcut *quickload = new QShortcut(QKeySequence("x"), this); //for powerairmax
-  gameMenu->addAction("Quickload (New JSON format - NOT stable)\tF2", this, SLOT(quickload()));
-  QShortcut *quickload = new QShortcut(QKeySequence("F2"), this);
+  gameMenu->addAction("Quickload\tx", this, SLOT(loadGameDialog())); //for powerairmax
+  QShortcut *quickload = new QShortcut(QKeySequence("x"), this); //for powerairmax
+//  gameMenu->addAction("Quickload (New JSON format - NOT stable)\tF2", this, SLOT(quickload()));
+//  QShortcut *quickload = new QShortcut(QKeySequence("F2"), this);
   connect(quickload, SIGNAL(activated()), SLOT(quickload()));
 
   gameMenu->addAction("Restart\tCtrl+R", this, SLOT(restartGame()));
@@ -396,8 +396,9 @@ void FastQSPWindow::playAudio(QString filename, int vol, QString flags) {
     }
     else // Update volume and flags when playing (does nothing, if there are no change)
     {
+      qDebug() << filename << vol;
       if(vol != audio[filename]->volume())
-        audio[filename]->setVolume(30);
+        audio[filename]->setVolume(vol);
 
       audio[filename]->updateFlags(flags);
     }
