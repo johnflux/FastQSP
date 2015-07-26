@@ -19,7 +19,6 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   player = new QMediaPlayer();
 #endif
 
-
   // Start timer
   timer.start();
 
@@ -29,10 +28,13 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
   graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   graphicsView->setUpdatesEnabled(true);
+  graphicsView->setFrameStyle(QFrame::NoFrame);
 
   webView = new QGraphicsWebView();
   webView->page()->setNetworkAccessManager(&netManager);
   webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+  webView->page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+  webView->page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
   scene->addItem(webView);
   scene->setBackgroundBrush(QBrush(QColor(0, 0, 0)));
   webView->setRenderHints(
@@ -97,13 +99,13 @@ FastQSPWindow::FastQSPWindow(QWidget *parent)
 
 //  gameMenu->addAction("Quicksave\tz", this, SLOT(saveGameDialog())); //for powerairmax
 //  QShortcut *quicksave = new QShortcut(QKeySequence("z"), this); //for powerairmax
-  gameMenu->addAction("Quicksave (New JSON format - NOT stable)\tF5", this, SLOT(quicksave()));
+  gameMenu->addAction("Quicksave\tF5", this, SLOT(quicksave()));
   QShortcut *quicksave = new QShortcut(QKeySequence("F5"), this);
   connect(quicksave, SIGNAL(activated()), SLOT(quicksave()));
 
 //  gameMenu->addAction("Quickload\tx", this, SLOT(loadGameDialog())); //for powerairmax
 //  QShortcut *quickload = new QShortcut(QKeySequence("x"), this); //for powerairmax
-  gameMenu->addAction("Quickload (New JSON format - NOT stable)\tF2", this, SLOT(quickload()));
+  gameMenu->addAction("Quickload\tF2", this, SLOT(quickload()));
   QShortcut *quickload = new QShortcut(QKeySequence("F2"), this);
   connect(quickload, SIGNAL(activated()), SLOT(quickload()));
 
@@ -207,6 +209,7 @@ void FastQSPWindow::toggleFullscreen() {
   } else {
     menuBar()->hide();
     showFullScreen();
+
 //    qDebug() << "fullscreen mode on";
   }
 }
@@ -279,7 +282,9 @@ void FastQSPWindow::loadGame(const QString &filename) {
 
 void FastQSPWindow::quicksave()
 {
-  qspJack.saveGameStatus(gameDirectory + "save/quicksave.json");
+  QString filename = gameDirectory + "save/quicksave.sav";
+  QSPSaveGame(filename.toStdWString().c_str(), true);
+//  qspJack.saveGameStatus(gameDirectory + "save/quicksave.json"); // New save system
   savestatus->setPlainText("Game is saved.");
   savestatus->setVisible(true);
   QTimer::singleShot(1000, this, SLOT(hideSaveStatus()));
@@ -299,7 +304,10 @@ void FastQSPWindow::quickload()
 void FastQSPWindow::startQuickloading()
 {
   builder.clear();
-  qspJack.loadGameStatus(gameDirectory + "save/quicksave.json");
+  QString filename = gameDirectory + "save/quicksave.sav";
+  QSPOpenSavedGame(filename.toStdWString().c_str(), true, ignoreCRCAction->isChecked());
+// New save system
+//  qspJack.loadGameStatus(gameDirectory + "save/quicksave.json");
   loadPage();
   savestatus->setVisible(false);
 }
@@ -642,7 +650,6 @@ void FastQSPWindow::gotoMainScreen()
   if(qspJack.isGotoMainScreenAcceptable())
     linkClicked(QUrl("EXEC: gt 'menu_form'"));
 }
-
 
 void FastQSPWindow::autosave() {
 //  qDebug() << "autosave:" << saveDir.absolutePath() + "/auto.sav";

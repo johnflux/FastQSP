@@ -321,6 +321,8 @@ void Jack::loadGameStatus(QString filename)
 
 void Jack::saveGameStatus(QString filename)
 {
+
+
   QJsonObject save_config = loadJSONObjFromFile(*qspGameDirectory + "json/save_config.json");
 
   QJsonObject obj;
@@ -334,17 +336,40 @@ void Jack::saveGameStatus(QString filename)
 
     QString type = entry.at(0) == '$' ? "string" : "int";
 
+    bool is_array = false;
+    if (key.right(9) == "_is_array")
+      is_array = true;
+
     QSP_CHAR var_name[entry.length() + 1];
 
     entry.toWCharArray(var_name);
 
     var_name[entry.length()] = L'\0';
 
-    QSPVariant var_data = qspGetVar(var_name);
-    if(type == "int")
-      obj[entry] = var_data.Val.Num;
+    if(is_array) // save all array indices
+    {
+      QSPVar *var = qspVarReferenceWithType(var_name, QSP_FALSE, nullptr); //True = create if not found (I think)
+      for(int i = 0; i < var->IndsCount; i++)
+      {
+        QString ind = entry + "['" + QString::fromWCharArray(var->Indices[i].Str)+ "']";
+        QString string_val = QString::fromWCharArray(var->Values[var->Indices[i].Index].Str);
+        if(string_val == "")
+          obj[ind] = var->Values[var->Indices[i].Index].Num;
+        else
+          obj["$" + ind] = string_val;
+
+        qDebug() << QString::fromWCharArray(var->Indices[i].Str) << var->Values[i].Num;
+        qDebug() << QString::fromWCharArray(var->Indices[i].Str) << QString::fromWCharArray(var->Values[i].Str);
+      }
+    }
     else
-      obj[entry] = QString::fromWCharArray(var_data.Val.Str);
+    {
+      QSPVariant var_data = qspGetVar(var_name);
+      if(type == "int")
+        obj[entry] = var_data.Val.Num;
+      else
+        obj[entry] = QString::fromWCharArray(var_data.Val.Str);
+    }
   }
 
   QFile saveFile(filename);
@@ -356,6 +381,7 @@ void Jack::saveGameStatus(QString filename)
   QJsonDocument doc(obj);
   saveFile.write(doc.toJson());
   saveFile.close();
+
 }
 
 QJsonObject Jack::loadJSONObjFromFile(QString filename)

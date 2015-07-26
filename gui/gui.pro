@@ -6,7 +6,7 @@ else: QT += phonon
 #QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
 CONFIG += c++11
 
-TARGET = FastQSP
+TARGET = jack
 TEMPLATE = app
 
 GIT_VERSION = $$system(git --git-dir $$PWD/../.git describe)
