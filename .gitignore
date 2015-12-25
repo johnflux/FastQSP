@@ -29,3 +29,6 @@ moc_*.cpp
 qrc_*.cpp
 Makefile*
 *-build-*
+
+# vim swp files
+*.swp
